@@ -1,0 +1,42 @@
+[
+    {	//This is how you define a method with named parameters.
+        "method": "serviceInfo",
+        "params": [ ],
+        "returns": "I am the Waypoint service."
+    },
+    {	//This is how you define a method with positional parameters.
+        "method": "add",
+        "params": [0.0, 0.0, 0.0, "name"],
+        "returns": true
+    },
+    {	//This is how you define a method with positional parameters.
+        "method": "removeWaypoint",
+        "params": ["name"],
+        "returns": true
+    },
+    {	//This is how you define a method with positional parameters.
+        "method": "addWaypoint",
+        "params": [{"name":"blah","lat":0.0,"lon":0.0,"ele":0.0,"address":"any"}],
+        "returns": true
+    },
+    {	//This is how you define a method with positional parameters.
+        "method": "getWaypoint",
+        "params": ["name"],
+        "returns": {"name":"ASU-Poly","lat":0.0,"lon":0.0,"ele":0.0}
+    },
+    {	//This is how you define a method with positional parameters.
+        "method": "getWaypoints",
+        "params": [],
+        "returns": {"waypoints":[{"name":"ASU-Poly","lat":0.0,"lon":0.0,"ele":0.0},{"name":"ASU-Tempe","lat":1.0,"lon":1.0,"ele":1.0}]}
+    },
+    {	//This is how you define a method with positional parameters.
+        "method": "getDistanceGCTo",
+        "params": ["waypoint1","waypoint2"],
+        "returns": 0.0
+    },
+        {	//This is how you define a method with positional parameters.
+        "method": "getBearingGCInitTo",
+        "params": ["waypoint1","waypoint2"],
+        "returns": 0.0
+    }
+]
