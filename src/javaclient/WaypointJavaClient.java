@@ -132,7 +132,7 @@ public class WaypointJavaClient extends WaypointGUI implements WaypointInterface
 
 			String ret = begin + toInsert + end;
 			String resultString = server.call(ret);
-
+			System.out.println(resultString);
 			JSONObject resultJSON = new JSONObject(resultString);
 			result = resultJSON.getJSONObject("result");
 			
