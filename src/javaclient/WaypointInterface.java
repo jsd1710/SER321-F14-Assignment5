@@ -1,10 +1,6 @@
 package javaclient;
 import org.json.*;
-/**
- * Purpose: demonstrate connecting to a CPP JsonRpc http service
- * @author Tim Lindquist (tim.lindquist@asu.edu), ASU Software Engineering
- * @version July 2014
- */
+
 public interface WaypointInterface 
 {
    public boolean add(double lat, double lon, double ele, String name);

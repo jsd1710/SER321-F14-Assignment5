@@ -64,7 +64,7 @@ class WaypointClient: public WaypointGUI, public waypointstubClient
 		string name(theName->value());
 
 		Json::Value wp;
-		wp["name"] = name.c_str();
+		wp["name"] = name;
 		wp["lat"] = atof(lat.c_str());
 		wp["lon"] = atof(lon.c_str());
 		wp["ele"] = atof(ele.c_str());
@@ -134,6 +134,7 @@ class WaypointClient: public WaypointGUI, public waypointstubClient
 				string lat = to_string(result["lat"].asDouble());
 				string lon = to_string(result["lon"].asDouble());
 				string ele = to_string(result["ele"].asDouble());
+
 				anInstance->nameIn->value(result["name"].asCString());
 				anInstance->latIn->value(lat.c_str());
 				anInstance->lonIn->value(lon.c_str());
@@ -161,7 +162,7 @@ class WaypointClient: public WaypointGUI, public waypointstubClient
 		{
 			Json::Value result = anInstance->getWaypoint(selected);
 
-			if (result.get("result","NOT ERROR") == "ERROR")
+			if (result["result"] == "ERROR")
 			{
 				cout << "Unsuccessful grab" << endl;
 				anInstance->nameIn->value("ERROR");
@@ -174,10 +175,12 @@ class WaypointClient: public WaypointGUI, public waypointstubClient
 				string lat = to_string(result["lat"].asDouble());
 				string lon = to_string(result["lon"].asDouble());
 				string ele = to_string(result["ele"].asDouble());
+
 				anInstance->nameIn->value(result["name"].asCString());
 				anInstance->latIn->value(lat.c_str());
 				anInstance->lonIn->value(lon.c_str());
 				anInstance->eleIn->value(ele.c_str());
+
 				cout << "Successful grab" << endl;
 			}
 

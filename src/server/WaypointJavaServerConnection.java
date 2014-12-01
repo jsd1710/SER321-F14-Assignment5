@@ -71,20 +71,16 @@ public class WaypointJavaServerConnection implements Runnable
 			{
 				send(packageRequest(getWaypoints(),id)); 
 			}
-			if(method.equals("getWaypoint"))
+			else if(method.equals("getWaypoint"))
 			{
 				String name = obj.getJSONArray("params").getString(0);
-				int index = getWaypointIndex(name);
-				JSONObject temp = waypoints.getJSONObject(index);
-				send(packageRequest(temp,id)); 
+				
+				send(packageRequest(getWaypoint(name),id)); 
 			}
 			else if(method.equals("removeWaypoint"))
 			{
 				String name = obj.getJSONArray("params").getString(0);
-				int index = getWaypointIndex(name);
-				waypoints.remove(index);
-				boolean result = true;
-				send(packageRequest(result,id));
+				send(packageRequest(remove(name),id));
 			}
 			else if (method.equals("add"))
 			{
@@ -94,8 +90,41 @@ public class WaypointJavaServerConnection implements Runnable
 				double ele = params.getDouble(2);
 				String name = params.getString(3);
 				
-				boolean result = add(lat,lon,ele,name);
-				send(packageRequest(result,id));
+				send(packageRequest(add(lat,lon,ele,name),id));
+			}
+			else if (method.equals("addWaypoint"))
+			{
+				JSONObject params = obj.getJSONArray("params").getJSONObject(0);
+				double lat = params.getDouble("lat");
+				double lon = params.getDouble("lon");
+				double ele = params.getDouble("ele");
+				String name = params.getString("name");
+				
+				send(packageRequest(add(lat,lon,ele,name),id));
+			}
+			else if (method.equals("getDistanceGCTo"))
+			{
+				JSONArray params = obj.getJSONArray("params");
+				
+				JSONObject waypoint1 = getWaypoint(params.getString(0));
+				JSONObject waypoint2 = getWaypoint(params.getString(1));
+				
+				Waypoint waypoint1Actual = new Waypoint(waypoint1.getDouble("lat"),waypoint1.getDouble("lon"),waypoint1.getDouble("ele"),waypoint1.getString("name"));
+				Waypoint waypoint2Actual = new Waypoint(waypoint2.getDouble("lat"),waypoint2.getDouble("lon"),waypoint2.getDouble("ele"),waypoint2.getString("name"));
+				
+				send(packageRequest(waypoint1Actual.distanceGCTo(waypoint2Actual, 0),id));
+			}
+			else if (method.equals("getBearingGCInitTo"))
+			{
+				JSONArray params = obj.getJSONArray("params");
+				
+				JSONObject waypoint1 = getWaypoint(params.getString(0));
+				JSONObject waypoint2 = getWaypoint(params.getString(1));
+				
+				Waypoint waypoint1Actual = new Waypoint(waypoint1.getDouble("lat"),waypoint1.getDouble("lon"),waypoint1.getDouble("ele"),waypoint1.getString("name"));
+				Waypoint waypoint2Actual = new Waypoint(waypoint2.getDouble("lat"),waypoint2.getDouble("lon"),waypoint2.getDouble("ele"),waypoint2.getString("name"));
+				
+				send(packageRequest(waypoint1Actual.bearingGCInitTo(waypoint2Actual, 0),id));
 			}
 			else
 			{
@@ -121,13 +150,16 @@ public class WaypointJavaServerConnection implements Runnable
 	public void send(JSONObject str) throws IOException
 	{
 		OutputStream out = socket.getOutputStream();
-		out.write("HTTP/1.1 200 OK\r\nDate: Mon, 23 May 2005 22:38:34 GMT\r\nContent-Encoding: gzip\r\n\r\n".getBytes());
-		GZIPOutputStream gzip = new GZIPOutputStream(out);
-
-		gzip.write(str.toString().getBytes("utf-8"));
-		gzip.close();
+		
+		String header = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: ";
+		header += str.toString().length() + "\r\n\r\n";
+		
+		out.write(header.getBytes());
+		out.write(str.toString().getBytes());
+		
 		out.flush();
 		out.close();
+		
 		socket.close();
  	}
 	
@@ -137,7 +169,7 @@ public class WaypointJavaServerConnection implements Runnable
 		
 		waypointsObject.put("waypoints", waypoints);
 		
-		System.out.println(waypointsObject);
+		System.out.println("SENT:		" + waypointsObject + "\n");
 		
 		return waypointsObject;
 	}
@@ -145,21 +177,62 @@ public class WaypointJavaServerConnection implements Runnable
 	boolean add(double latInput, double lonInput, double eleInput, String nameInput)
 	{
 		JSONObject temp = new JSONObject();
+		
 		temp.put("name", nameInput);
 		temp.put("lat", latInput);
 		temp.put("lon", lonInput);
 		temp.put("ele", eleInput);
-		waypoints.put(temp);
-		System.out.println("Added:		" + "Waypoint(" + latInput + ", " + lonInput + ", " + eleInput + ", " + nameInput + ");" );
-		return true;
+		
+		if (getWaypointIndex(nameInput) == -1)
+		{
+			waypoints.put(temp);
+			System.out.println("Added:		" + "Waypoint(" + latInput + ", " + lonInput + ", " + eleInput + ", " + nameInput + ");" + "\n");
+			return true;
+		}
+		else
+		{
+			System.out.println("ERROR:		" + "Waypoint(" + latInput + ", " + lonInput + ", " + eleInput + ", " + nameInput + ") already exists;" + "\n");
+			return false;
+		}
 	}
 	
-	int getWaypointIndex(String name)
+	boolean remove(String nameInput)
+	{
+		int index = getWaypointIndex(nameInput);
+		
+		if (waypoints.remove(index) != null)
+		{
+			System.out.println("Removed:	" + "Waypoint(" + nameInput + ");"+ "\n");
+			return true;
+		}
+		else 
+		{
+			System.out.println("ERROR:		" + "Could not remove Waypoint(" + nameInput + ");"+ "\n");
+			return false;
+		}
+	}
+	
+	JSONObject getWaypoint(String nameInput)
+	{
+		int index = getWaypointIndex(nameInput);
+		if (index != -1)
+		{
+			return waypoints.getJSONObject(index);
+		}
+		else
+		{
+			JSONObject errorResponse = new JSONObject();
+			errorResponse.put("result", "ERROR");
+			return errorResponse;
+		}
+	}
+	
+	int getWaypointIndex(String nameInput)
 	{
 		for (int i = 0; i < waypoints.length(); i++)
 		{
 			JSONObject temp = waypoints.getJSONObject(i);
-			if (name.compareTo(temp.getString("name")) == 0)
+			if (nameInput.compareTo(temp.getString("name")) == 0)
 			{
 				return i;
 			}
