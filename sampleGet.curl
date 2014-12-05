@@ -1,0 +1,5 @@
+curl --data "{\"jsonrpc\":\"2.0\",\"method\":\"getWaypoint\",\"params\":[\"JACOB\"],\"id\":3}" 192.168.2.2:8080
+
+OR
+
+curl --data "{\"jsonrpc\":\"2.0\",\"method\":\"getWaypoints\",\"params\":[],\"id\":3}" 192.168.2.2:8080

@@ -422,7 +422,8 @@ public class WaypointJavaClient extends WaypointGUI implements WaypointInterface
 			{
 				url = "http://" + args[0] + ":" + args[1] + "/";
 			}
-
+			
+			System.out.println("Connection to: " + url);
 			WaypointJavaClient wjc = new WaypointJavaClient(url);
 			
 		} 

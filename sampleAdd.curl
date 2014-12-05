@@ -1,1 +1,5 @@
-curl --data "{\"jsonrpc\":\"2.0\",\"method\":\"addWaypoint\",\"params\":[0.0,0.0,0.0,\"JACOB\"],\"id\":3}" 192.168.2.2:8080
+curl --data "{\"jsonrpc\":\"2.0\",\"method\":\"add\",\"params\":[0.0,0.0,0.0,\"JACOB\"],\"id\":3}" 192.168.2.2:8080
+
+OR 
+
+curl --data "{\"jsonrpc\":\"2.0\",\"method\":\"addWaypoint\",\"params\":[{\"lat\":1.0,\"lon\":1.0,\"ele\":1.0,\"name\":\"ASU-POLY\"}],\"id\":3}" 192.168.2.2:8080

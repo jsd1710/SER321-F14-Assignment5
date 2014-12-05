@@ -105,8 +105,31 @@ class WaypointClient: public WaypointGUI, public waypointstubClient
 		anInstance->removeWaypoint(name);
 		anInstance->addWaypoint(wp);
 
-		cout << "Modified:	" << name << "(" << lat << ", " << lon << ", " << ele << ", " << name << ");" << endl;
+		cout << "Modified:	" << name << "(" << lat << ", " << lon << ", " << ele << ", " << name << "); \n" << endl;
 		buildWaypointList(anInstance);
+	}
+
+	static void ClickedDistBear(Fl_Widget * w, void * userdata)
+	{
+			WaypointClient* anInstance = (WaypointClient*) userdata;
+			Fl_Input_Choice * fromWPChoice = anInstance->frWps;
+			Fl_Input_Choice * toWPChoice = anInstance->toWps;
+			Fl_Input * distBearOutput = anInstance->distBearIn;
+
+			double dist = anInstance->getDistanceGCTo(fromWPChoice->value(), toWPChoice->value());
+			double bear = anInstance->getBearingGCInitTo(fromWPChoice->value(), toWPChoice->value());
+
+			stringstream ss;
+			ss.precision(5);
+
+			ss << dist << "/" << bear;
+			string result = ss.str();
+
+			distBearOutput->value(result.c_str());
+
+			cout << "Calculated distance/bearing: " << result << "; \n"<< endl;
+
+			buildWaypointList(anInstance);
 	}
 
 	static void SelectedFromWP(Fl_Widget * w, void * userdata)
@@ -231,6 +254,7 @@ public:
 		frWps->callback(SelectedFromWP, (void*) this);
 		toWps->callback(SelectedToWP, (void*) this);
 		modWPButt->callback(ClickedModifyWP, (void*) this);
+		distBearButt->callback(ClickedDistBear, (void*) this);
 		//importJSONButt->callback(ClickedImportJSON, (void*) this);
 		callback(ClickedX);
 		buildWaypointList(this);

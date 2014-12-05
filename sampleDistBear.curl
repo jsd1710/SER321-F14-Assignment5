@@ -1,0 +1,5 @@
+GC Distance:
+curl --data "{\"jsonrpc\":\"2.0\",\"method\":\"getDistanceGCTo\",\"params\":[\"JACOB\",\"ASU-POLY\"],\"id\":3}" 192.168.2.2:8080
+
+GB Bearing:
+curl --data "{\"jsonrpc\":\"2.0\",\"method\":\"getBearingGCInitTo\",\"params\":[\"JACOB\",\"ASU-POLY\"],\"id\":3}" 192.168.2.2:8080

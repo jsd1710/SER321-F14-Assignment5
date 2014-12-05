@@ -114,6 +114,7 @@ protected:
 	 * in the distBearIn text field.
 	 */
 	Fl_Button * distBearButt;
+
 	Fl_Text_Display * aLab;
 	Fl_Text_Buffer * buff;
 

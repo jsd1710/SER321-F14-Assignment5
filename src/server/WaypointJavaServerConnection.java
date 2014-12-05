@@ -6,8 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.zip.GZIPOutputStream;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,39 +13,50 @@ public class WaypointJavaServerConnection implements Runnable
 {
 	JSONArray waypoints;
 	Socket socket;
-	BufferedReader reader;
-	OutputStream output;
 	
-	public WaypointJavaServerConnection(Socket socket, JSONArray waypoints)
+	OutputStream output;
+	InputStream input;
+	BufferedReader reader;
+	
+	public WaypointJavaServerConnection(Socket socket, JSONArray waypoints) throws IOException
 	{
 		this.waypoints = waypoints;
 		this.socket = socket;
+		this.input = socket.getInputStream();
+		this.output = socket.getOutputStream();
 	}
 	
 	public void run()
 	{		
 		try 
 		{
-			InputStream stream = socket.getInputStream();
-			//ObjectOutputStream output =  new ObjectOutputStream(socket.getOutputStream());
-			reader = new BufferedReader(new InputStreamReader(stream));
-			String input = "{";
-			char i;
-			int c = 0;
-			while(true){
-				i = (char)stream.read();
-				if(i == '{'){
-					c++;
-					while(c != 0){
-						i = (char)stream.read();
-						if(i == '}'){
-							c--;
-						}
-						if(i == '{'){
-							c++;
-						}
-						input += i;
-					}
+			reader = new BufferedReader(new InputStreamReader(input));
+			String input = "";
+			
+			char charInput;
+			int leftBraceCount = 0;
+			int rightBraceCount = 0;
+
+			while (reader.ready())
+			{
+				charInput = (char) reader.read();
+
+				if (leftBraceCount == 0 && charInput == '{')
+				{
+					leftBraceCount++;
+					input = "{";
+				}
+				else if (leftBraceCount > 0 && charInput != '}')
+				{
+					input += charInput;
+				}
+				else if (charInput == '}')
+				{
+					rightBraceCount++;
+					input += charInput;
+				}
+				else if (input.length() > 2 && leftBraceCount == rightBraceCount)
+				{
 					break;
 				}
 			}
@@ -126,10 +135,6 @@ public class WaypointJavaServerConnection implements Runnable
 				
 				send(packageRequest(waypoint1Actual.bearingGCInitTo(waypoint2Actual, 0),id));
 			}
-			else
-			{
-				//send("", id);
-			}
 		}
 		catch(Exception e)
 		{
@@ -149,16 +154,16 @@ public class WaypointJavaServerConnection implements Runnable
 	
 	public void send(JSONObject str) throws IOException
 	{
-		OutputStream out = socket.getOutputStream();
+		output = socket.getOutputStream();
 		
 		String header = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: ";
 		header += str.toString().length() + "\r\n\r\n";
 		
-		out.write(header.getBytes());
-		out.write(str.toString().getBytes());
+		output.write(header.getBytes());
+		output.write(str.toString().getBytes());
 		
-		out.flush();
-		out.close();
+		output.flush();
+		output.close();
 		
 		socket.close();
  	}
