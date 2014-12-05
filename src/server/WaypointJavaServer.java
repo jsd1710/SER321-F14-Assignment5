@@ -7,8 +7,8 @@ import org.json.JSONArray;
 
 public class WaypointJavaServer 
 {
-	private static JSONArray waypoints;
-	protected ServerSocket server = null;
+	private JSONArray waypoints;
+	ServerSocket server;
 	
 	public WaypointJavaServer(int port)
 	{

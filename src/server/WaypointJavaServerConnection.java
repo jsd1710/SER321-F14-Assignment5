@@ -27,7 +27,7 @@ public class WaypointJavaServerConnection implements Runnable
 	}
 	
 	public void run()
-	{		
+	{ //Logical Equivalent of a "Main" method for a class.		
 		try 
 		{
 			reader = new BufferedReader(new InputStreamReader(input));
@@ -60,7 +60,10 @@ public class WaypointJavaServerConnection implements Runnable
 					break;
 				}
 			}
-			build(input);
+			if (input.length() > 0)
+			{
+				build(input);
+			}
 		} 
 		catch (Exception e) 
 		{
@@ -73,7 +76,7 @@ public class WaypointJavaServerConnection implements Runnable
 		try
 		{
 			JSONObject obj = new JSONObject(input);
-			String method = (String)obj.get("method");
+			String method = (String) obj.get("method");
 			int id = obj.getInt("id");
 			
 			if(method.equals("getWaypoints"))
@@ -83,7 +86,6 @@ public class WaypointJavaServerConnection implements Runnable
 			else if(method.equals("getWaypoint"))
 			{
 				String name = obj.getJSONArray("params").getString(0);
-				
 				send(packageRequest(getWaypoint(name),id)); 
 			}
 			else if(method.equals("removeWaypoint"))

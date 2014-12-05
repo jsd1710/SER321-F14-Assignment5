@@ -1,17 +1,14 @@
 package javaclient;
 
-import java.io.*;
-import java.util.*;
 import java.net.URL;
 
 import org.json.*;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
 
 import java.text.DecimalFormat;
 
+@SuppressWarnings("serial")
 public class WaypointJavaClient extends WaypointGUI implements WaypointInterface, ActionListener, ItemListener 
 {
 	private DecimalFormat format = new DecimalFormat("#.000");
@@ -37,7 +34,6 @@ public class WaypointJavaClient extends WaypointGUI implements WaypointInterface
 		{
 			this.server = new JsonRpcRequestViaHttp(new URL(serviceURL));
 			buildWaypointsList();
-			System.out.println();
 		} 
 		catch (Exception ex) 
 		{
@@ -132,7 +128,7 @@ public class WaypointJavaClient extends WaypointGUI implements WaypointInterface
 
 			String ret = begin + toInsert + end;
 			String resultString = server.call(ret);
-			System.out.println(resultString);
+			
 			JSONObject resultJSON = new JSONObject(resultString);
 			result = resultJSON.getJSONObject("result");
 			
@@ -186,7 +182,7 @@ public class WaypointJavaClient extends WaypointGUI implements WaypointInterface
 	{
 		JSONObject waypointJSON = new JSONObject(jsonString);
 		
-		String toInsert = "[" + jsonString + "]";
+		String toInsert = "[" + waypointJSON + "]";
 		
 		boolean added = packageWaypointCallBoolean("addWaypoint", toInsert);
 		if (added) 
@@ -391,14 +387,14 @@ public class WaypointJavaClient extends WaypointGUI implements WaypointInterface
 			for (int i = 0; i < waypointsArray.length(); i++) // Adding From Waypoints
 			{
 				JSONObject temp = waypointsArray.getJSONObject(i);
-				fromWaypointBox.addItem(temp.get("name"));	
+				fromWaypointBox.addItem(temp.getString("name"));	
 			}
 			
 			toWaypointBox.removeAllItems();
 			for (int i = 0; i < waypointsArray.length(); i++) // Adding To Waypoints
 			{
 				JSONObject temp = waypointsArray.getJSONObject(i);
-				toWaypointBox.addItem(temp.get("name"));
+				toWaypointBox.addItem(temp.getString("name"));
 			}
 			System.out.println("Rebuilt Waypoint Dropdowns.");
 		}
@@ -424,7 +420,7 @@ public class WaypointJavaClient extends WaypointGUI implements WaypointInterface
 			}
 			
 			System.out.println("Connection to: " + url);
-			WaypointJavaClient wjc = new WaypointJavaClient(url);
+			new WaypointJavaClient(url);
 			
 		} 
 		catch (Exception e) 

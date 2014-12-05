@@ -2,20 +2,15 @@ package javaclient;
 
 import javax.swing.*;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
 import org.json.*;
 
-import java.text.DecimalFormat;
-
+@SuppressWarnings("serial")
 public class WaypointGUI extends JFrame
 {
 	protected JSONArray waypointsArray;
-	private DecimalFormat format = new DecimalFormat("#.000");
 
-	protected JComboBox fromWaypointBox;
-	protected JComboBox toWaypointBox;
+	protected JComboBox<String> fromWaypointBox;
+	protected JComboBox<String> toWaypointBox;
 
 	protected JTextField latIn;
 	protected JTextField lonIn;
@@ -39,12 +34,10 @@ public class WaypointGUI extends JFrame
 		super(title);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-		Toolkit tk = Toolkit.getDefaultToolkit();
-
 		getContentPane().setLayout(null);
 		setSize(500, 350);
 
-		fromWaypointBox = new JComboBox(); // From Waypoints List
+		fromWaypointBox = new JComboBox<String>(); // From Waypoints List
 		fromWaypointBox.setBounds(40, 10, 160, 25);
 		getContentPane().add(fromWaypointBox);
 		fromWaypointBox.addItem("From here");
@@ -53,7 +46,7 @@ public class WaypointGUI extends JFrame
 		fromLab.setBounds(10, 10, 30, 25);
 		getContentPane().add(fromLab);
 
-		toWaypointBox = new JComboBox();
+		toWaypointBox = new JComboBox<String>();
 		toWaypointBox.setBounds(40, 45, 160, 25);
 		getContentPane().add(toWaypointBox);
 		toWaypointBox.addItem("To here");
